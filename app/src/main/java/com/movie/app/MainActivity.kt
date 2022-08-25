@@ -1,4 +1,4 @@
-package com.movie.app.mainScreen
+package com.movie.app
 
 import android.os.Bundle
 import android.util.Log
@@ -9,18 +9,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,14 +23,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
+import com.movie.app.LoadingState
 import com.movie.app.R
-import com.movie.app.mainScreen.LoadingStates.Companion.LOADING
+import com.movie.app.LoadingState.Companion.LOADING
 import com.movie.app.ui.theme.MovieAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -57,6 +54,7 @@ class MainActivity : ComponentActivity() {
 fun GoogleSignInComponent(loginViewModel: MainViewModel) {
 
     val state by loginViewModel.loadingStates.collectAsState()
+    val statusText = remember { mutableStateOf("") }
 
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -74,31 +72,31 @@ fun GoogleSignInComponent(loginViewModel: MainViewModel) {
     val token = stringResource(R.string.default_web_client_id)
 
     if (state == LOADING) {
-        CircularProgressIndicator()
-    } else {
-        MainUI(
-            onSignInClick = {
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(token)
-                    .requestEmail()
-                    .build()
+            CircularProgressIndicator()
+        } else {
+            MainUI(
+                onSignInClick = {
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(token)
+                        .requestEmail()
+                        .build()
 
-                val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                launcher.launch(googleSignInClient.signInIntent)
-            }
-        )
-    }
+                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                    launcher.launch(googleSignInClient.signInIntent)
+                },
+                statusText = statusText
+            )
+        }
 
     when (state.status) {
-                LoadingStates.Status.SUCCESS -> {
-
-                    Text(text = "Success")
+                LoadingState.Status.SUCCESS -> {
+                    statusText.value = "Success"
                 }
-                LoadingStates.Status.FAILED -> {
-                    Text(text = state.msg ?: "Error")
+                LoadingState.Status.FAILED -> {
+                    statusText.value = "Error" + state.msg
                 }
-                LoadingStates.Status.LOGGED_IN -> {
-                    Text(text = "Already Logged In")
+                LoadingState.Status.LOGGED_IN -> {
+                    statusText.value = "Already Logged In"
                 }
                 else -> {
                 }
@@ -107,7 +105,8 @@ fun GoogleSignInComponent(loginViewModel: MainViewModel) {
 
 @Composable
 fun MainUI(
-    onSignInClick:() -> Unit = {}
+    onSignInClick:() -> Unit = {},
+    statusText: MutableState<String>
 ) {
 
     Column(
@@ -127,8 +126,18 @@ fun MainUI(
                 .clip(RoundedCornerShape(15.dp))
                 .background(Color.DarkGray)
                 .clickable { onSignInClick() }
-                .padding(vertical = 10.dp, horizontal = 13.dp)
+                .padding(vertical = 10.dp, horizontal = 40.dp)
         )
 
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = statusText.value,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Light,
+            color = Color.DarkGray,
+            modifier = Modifier.padding(horizontal = 5.dp)
+        )
     }
 }

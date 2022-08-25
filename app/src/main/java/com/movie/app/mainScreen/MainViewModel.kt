@@ -1,21 +1,20 @@
-package com.movie.app
+package com.movie.app.mainScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-data class LoadingState private constructor(val status: Status, val msg: String? = null) {
+data class LoadingStates constructor(val status: Status, val msg: String? = null) {
     companion object {
-        val LOADED = LoadingState(Status.SUCCESS)
-        val IDLE = LoadingState(Status.IDLE)
-        val LOADING = LoadingState(Status.RUNNING)
-        val LOGGED_IN = LoadingState(Status.LOGGED_IN)
-        fun error(msg: String?) = LoadingState(Status.FAILED, msg)
+        val LOADED = LoadingStates(Status.SUCCESS)
+        val IDLE = LoadingStates(Status.IDLE)
+        val LOADING = LoadingStates(Status.RUNNING)
+        val LOGGED_IN = LoadingStates(Status.LOGGED_IN)
+        fun error(msg: String?) = LoadingStates(Status.FAILED, msg)
     }
 
     enum class Status {
@@ -28,15 +27,15 @@ data class LoadingState private constructor(val status: Status, val msg: String?
 }
 
 class MainViewModel : ViewModel() {
-    val loadingState = MutableStateFlow(LoadingState.IDLE)
+    val loadingStates = MutableStateFlow(LoadingStates.IDLE)
 
     fun signWithCredential(credential: AuthCredential) = viewModelScope.launch {
         try {
-            loadingState.emit(LoadingState.LOADING)
+            loadingStates.emit(LoadingStates.LOADING)
             Firebase.auth.signInWithCredential(credential)
-            loadingState.emit(LoadingState.LOADED)
+            loadingStates.emit(LoadingStates.LOADED)
         } catch (e: Exception) {
-            loadingState.emit(LoadingState.error(e.localizedMessage))
+            loadingStates.emit(LoadingStates.error(e.localizedMessage))
         }
     }
 }

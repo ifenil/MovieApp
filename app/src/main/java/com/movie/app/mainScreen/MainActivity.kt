@@ -1,4 +1,4 @@
-package com.movie.app
+package com.movie.app.mainScreen
 
 import android.os.Bundle
 import android.util.Log
@@ -7,21 +7,35 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.movie.app.LoadingState.Companion.LOADING
+import com.movie.app.R
+import com.movie.app.mainScreen.LoadingStates.Companion.LOADING
 import com.movie.app.ui.theme.MovieAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +56,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GoogleSignInComponent(loginViewModel: MainViewModel) {
 
-    val state by loginViewModel.loadingState.collectAsState()
+    val state by loginViewModel.loadingStates.collectAsState()
 
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -58,59 +72,63 @@ fun GoogleSignInComponent(loginViewModel: MainViewModel) {
 
     val context = LocalContext.current
     val token = stringResource(R.string.default_web_client_id)
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        content = {
-            OutlinedButton(border = ButtonDefaults.outlinedBorder.copy(width = 1.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp), onClick = {
-                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(token)
-                        .requestEmail()
-                        .build()
 
-                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                    launcher.launch(googleSignInClient.signInIntent)
-                },
-                content = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = if (state == LOADING) Arrangement.Center else Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        content = {
-                            if (state == LOADING) {
-                                CircularProgressIndicator()
-                            } else {
-                                Text(
-                                    style = MaterialTheme.typography.button,
-                                    color = MaterialTheme.colors.onSurface,
-                                    text = "Sign in with Google"
-                                )
-                            }
-                        }
-                    )
-                })
+    if (state == LOADING) {
+        CircularProgressIndicator()
+    } else {
+        MainUI(
+            onSignInClick = {
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(token)
+                    .requestEmail()
+                    .build()
 
-            when (state.status) {
-                LoadingState.Status.SUCCESS -> {
+                val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                launcher.launch(googleSignInClient.signInIntent)
+            }
+        )
+    }
+
+    when (state.status) {
+                LoadingStates.Status.SUCCESS -> {
 
                     Text(text = "Success")
                 }
-                LoadingState.Status.FAILED -> {
+                LoadingStates.Status.FAILED -> {
                     Text(text = state.msg ?: "Error")
                 }
-                LoadingState.Status.LOGGED_IN -> {
+                LoadingStates.Status.LOGGED_IN -> {
                     Text(text = "Already Logged In")
                 }
                 else -> {
                 }
             }
-        }
-    )
 }
 
+@Composable
+fun MainUI(
+    onSignInClick:() -> Unit = {}
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Sign In",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier
+                .padding(horizontal = 5.dp)
+                .clip(RoundedCornerShape(15.dp))
+                .background(Color.DarkGray)
+                .clickable { onSignInClick() }
+                .padding(vertical = 10.dp, horizontal = 13.dp)
+        )
+
+    }
+}

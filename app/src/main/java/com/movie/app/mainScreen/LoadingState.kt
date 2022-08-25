@@ -1,4 +1,4 @@
-package com.movie.app
+package com.movie.app.mainScreen
 
 data class LoadingState constructor(val status: Status, val msg: String? = null) {
     companion object {

@@ -1,4 +1,4 @@
-package com.movie.app
+package com.movie.app.mainScreen
 
 import android.os.Bundle
 import android.util.Log
@@ -26,24 +26,45 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.movie.app.LoadingState
+import com.movie.app.LoginManager
 import com.movie.app.R
-import com.movie.app.LoadingState.Companion.LOADING
+import com.movie.app.homeScreen.HomeUI
+import com.movie.app.mainScreen.LoadingState.Companion.LOADING
 import com.movie.app.ui.theme.MovieAppTheme
 
 class MainActivity : ComponentActivity() {
     private val loginViewModel by viewModels<MainViewModel>()
+    lateinit var loginManager: LoginManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
+            loginManager = LoginManager(this)
+
             MovieAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    GoogleSignInComponent(loginViewModel = loginViewModel)
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = if (loginManager.counter.collectAsState(initial = false).value) "home" else "mainScreen"
+                    ) {
+                        composable("mainScreen") {
+                            navController.GoogleSignInComponent(loginViewModel = loginViewModel)
+                        }
+
+                        composable("home") {
+                            navController.HomeUI()
+                        }
+                    }
                 }
             }
         }
@@ -51,10 +72,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun GoogleSignInComponent(loginViewModel: MainViewModel) {
+fun NavHostController.GoogleSignInComponent(loginViewModel: MainViewModel) {
 
     val state by loginViewModel.loadingStates.collectAsState()
     val statusText = remember { mutableStateOf("") }
+    val loginManager: LoginManager = LoginManager(context)
+
 
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -89,18 +112,26 @@ fun GoogleSignInComponent(loginViewModel: MainViewModel) {
         }
 
     when (state.status) {
-                LoadingState.Status.SUCCESS -> {
-                    statusText.value = "Success"
-                }
-                LoadingState.Status.FAILED -> {
-                    statusText.value = "Error" + state.msg
-                }
-                LoadingState.Status.LOGGED_IN -> {
-                    statusText.value = "Already Logged In"
-                }
-                else -> {
+        LoadingState.Status.SUCCESS -> {
+            statusText.value = "Success"
+
+            LaunchedEffect(Unit) {
+                loginManager.setLoginData(true)
+                navigate("home") {
+                    popUpTo("mainScreen") {
+                        inclusive = true
+                    }
                 }
             }
+        }
+        LoadingState.Status.FAILED -> {
+            statusText.value = "Error" + state.msg
+        }
+        LoadingState.Status.LOGGED_IN -> {
+            statusText.value = "Already Logged In"
+        }
+        else -> { }
+    }
 }
 
 @Composable
@@ -108,7 +139,6 @@ fun MainUI(
     onSignInClick:() -> Unit = {},
     statusText: MutableState<String>
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()

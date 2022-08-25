@@ -1,11 +1,11 @@
-package com.movie.app
+package com.movie.app.mainScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.movie.app.LoadingState
+import com.movie.app.mainScreen.LoadingState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

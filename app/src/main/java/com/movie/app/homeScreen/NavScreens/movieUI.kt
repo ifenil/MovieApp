@@ -131,18 +131,19 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                             .clickable { }
                     )
 
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.fillMaxSize()) {
                         Text(
                             text = it.movieName,
-                            fontSize = 18.sp,
+                            fontSize = 17.sp,
+                            maxLines = 2,
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
-                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 6.dp)
+                            modifier = Modifier
+                                .padding(top = 5.dp, start = 5.dp, end = 5.dp)
+                                .weight(1f)
                         )
 
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        Row {
+                        Row(modifier = Modifier.weight(1f)) {
                             IconButton(onClick = {
                                 viewModel.updateIsFav(!it.isFav, it.imageUrl)
                             }) {
@@ -166,10 +167,8 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                             }
                         }
 
-                        Spacer(modifier = Modifier.weight(1f))
-
                         Row(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().weight(1f),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {

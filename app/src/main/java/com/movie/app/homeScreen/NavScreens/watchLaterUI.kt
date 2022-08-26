@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -64,6 +65,7 @@ fun WatchLaterUI() {
                                         .fillMaxWidth()
                                         .padding(horizontal = 8.dp, vertical = 10.dp)
                                         .clip(RoundedCornerShape(10.dp))
+                                        .height(150.dp)
                                         .background(Color.DarkGray)
                                 ) {
 
@@ -72,36 +74,24 @@ fun WatchLaterUI() {
                                         contentDescription = null,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
-                                            .size(180.dp, 150.dp)
+                                            .fillMaxHeight()
+                                            .width(180.dp)
                                             .clickable { }
                                     )
 
-                                    Column(modifier = Modifier.fillMaxWidth()) {
+                                    Column(modifier = Modifier.fillMaxSize()) {
                                         Text(
                                             text = it.movieName,
-                                            fontSize = 18.sp,
+                                            fontSize = 17.sp,
+                                            maxLines = 2,
                                             fontWeight = FontWeight.Bold,
                                             color = Color.White,
-                                            modifier = Modifier.padding(
-                                                horizontal = 5.dp,
-                                                vertical = 6.dp
-                                            )
+                                            modifier = Modifier
+                                                .padding(top = 5.dp, start = 5.dp, end = 5.dp)
+                                                .weight(1f)
                                         )
 
-                                        Text(
-                                            text = "Rating :- " + it.userRating,
-                                            fontSize = 10.sp,
-                                            fontWeight = FontWeight.Light,
-                                            color = Color.White,
-                                            modifier = Modifier.padding(
-                                                horizontal = 5.dp,
-                                                vertical = 5.dp
-                                            )
-                                        )
-
-                                        Spacer(modifier = Modifier.height(8.dp))
-
-                                        Row {
+                                        Row(modifier = Modifier.weight(1f)) {
                                             IconButton(onClick = {
                                                 viewModel.updateIsFav(!it.isFav, it.imageUrl)
                                             }) {
@@ -123,6 +113,33 @@ fun WatchLaterUI() {
                                                     modifier = Modifier.padding(horizontal = 6.dp)
                                                 )
                                             }
+                                        }
+
+                                        Row(
+                                            modifier = Modifier.fillMaxSize().weight(1f),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
+                                                CircularProgressIndicator(
+                                                    progress = 1f,
+                                                    color = Color.LightGray,
+                                                    strokeWidth = 3.dp,
+                                                    modifier = Modifier.size(25.dp)
+                                                )
+                                                CircularProgressIndicator(
+                                                    progress = it.userRating.toFloat()/10,
+                                                    color = Color.Yellow,
+                                                    strokeWidth = 3.dp,
+                                                    modifier = Modifier.size(25.dp)
+                                                )
+                                            }
+
+                                            Text(
+                                                text = "Rating: " + it.userRating,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Light,
+                                                color = Color.White,
+                                            )
                                         }
                                     }
                                 }

@@ -117,6 +117,7 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp, vertical = 10.dp)
                         .clip(RoundedCornerShape(10.dp))
+                        .height(150.dp)
                         .background(Color.DarkGray)
                 ) {
 
@@ -125,7 +126,8 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                         contentDescription = null,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(180.dp, 150.dp)
+                            .fillMaxHeight()
+                            .width(180.dp)
                             .clickable { }
                     )
 
@@ -138,15 +140,7 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                             modifier = Modifier.padding(horizontal = 5.dp, vertical = 6.dp)
                         )
 
-                        Text(
-                            text = "Rating :- " + it.userRating,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Light,
-                            color = Color.White,
-                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.weight(1f))
 
                         Row {
                             IconButton(onClick = {
@@ -170,6 +164,35 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                                     modifier = Modifier.padding(horizontal = 6.dp)
                                 )
                             }
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
+                                CircularProgressIndicator(
+                                    progress = 1f,
+                                    color = Color.LightGray,
+                                    strokeWidth = 3.dp,
+                                    modifier = Modifier.size(25.dp)
+                                )
+                                CircularProgressIndicator(
+                                    progress = it.userRating.toFloat()/10,
+                                    color = Color.Yellow,
+                                    strokeWidth = 3.dp,
+                                    modifier = Modifier.size(25.dp)
+                                )
+                            }
+
+                            Text(
+                                text = "Rating: " + it.userRating,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Light,
+                                color = Color.White,
+                            )
                         }
                     }
                 }

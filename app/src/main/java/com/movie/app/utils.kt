@@ -31,3 +31,11 @@ class LoginManager(private val context: Context) {
         )
     }
 }
+
+data class Movie(val name: String,
+                 val imageUrl: String,
+                 val category: String,
+                 val movieBanner: String,
+                 val description: String,
+                 val releaseDate: String,
+                 val userRating: String)

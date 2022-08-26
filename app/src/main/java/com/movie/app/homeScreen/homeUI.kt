@@ -74,7 +74,7 @@ fun BottomNavigationBar(navController: NavController) {
 fun Navigation(navController: NavHostController) {
     NavHost(navController, startDestination = NavigationItem.Movies.route) {
         composable(NavigationItem.Movies.route) {
-            Text(text = "Movies")
+            MovieUI()
         }
         composable(NavigationItem.Favorites.route) {
             Text(text = "Favorites")

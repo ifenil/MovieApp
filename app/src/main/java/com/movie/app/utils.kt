@@ -1,6 +1,8 @@
 package com.movie.app
 
 import android.content.Context
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
@@ -38,4 +40,6 @@ data class Movie(val name: String,
                  val movieBanner: String,
                  val description: String,
                  val releaseDate: String,
-                 val userRating: String)
+                 val userRating: String,
+                 val isFav: MutableState<Boolean> = mutableStateOf(false),
+                 val isLater: MutableState<Boolean> = mutableStateOf(false))

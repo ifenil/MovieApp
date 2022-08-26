@@ -38,6 +38,10 @@ class RoomViewModel(application: Application) : ViewModel() {
     fun updateIsLater(isLater: Boolean, imageURL: String) {
         repository.updateIsLater(isLater, imageURL)
     }
+
+    fun deleteALL() {
+        repository.deleteALL()
+    }
 }
 
 class RoomViewModelFactory(val application: Application) : ViewModelProvider.Factory {

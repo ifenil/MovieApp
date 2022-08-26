@@ -45,6 +45,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.movie.app.LoginManager
 import com.movie.app.R
 import com.movie.app.homeScreen.HomeUI
+import com.movie.app.mainScreen.LoadingState.Companion.IDLE
 import com.movie.app.mainScreen.LoadingState.Companion.LOADING
 import com.movie.app.room.MovieRoom
 import com.movie.app.room.RoomViewModel
@@ -54,6 +55,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
+
 class MainActivity : ComponentActivity() {
     private val loginViewModel by viewModels<MainViewModel>()
     lateinit var loginManager: LoginManager
@@ -62,7 +64,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            loginManager = LoginManager(this)
+            loginManager = LoginManager(applicationContext)
 
             MovieAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
@@ -88,9 +90,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavHostController.GoogleSignInComponent(loginViewModel: MainViewModel) {
 
-    val state by loginViewModel.loadingStates.collectAsState()
+    val state by loginViewModel.loadingStates.collectAsState(initial = IDLE)
     val statusText = remember { mutableStateOf("") }
-    val loginManager: LoginManager = LoginManager(context)
+    val loginManager = LoginManager(context)
     val owner = LocalViewModelStoreOwner.current
     owner?.let {
         val viewModel: RoomViewModel = viewModel(
@@ -133,6 +135,7 @@ fun NavHostController.GoogleSignInComponent(loginViewModel: MainViewModel) {
                 statusText = statusText
             )
         }
+
 
         when (state.status) {
             LoadingState.Status.SUCCESS -> {

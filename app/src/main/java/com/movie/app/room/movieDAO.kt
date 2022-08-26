@@ -22,6 +22,9 @@ interface MovieDao {
 
     @Query("UPDATE movies SET isLater = :newVal WHERE imageUrl =:imageURL")
     fun updateLater(newVal: Boolean, imageURL: String)
+
+    @Query("DELETE FROM movies")
+    fun deleteAll()
 }
 
 @Database(entities = [(MovieRoom::class)], version = 1)

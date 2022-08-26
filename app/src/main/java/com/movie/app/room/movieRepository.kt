@@ -37,6 +37,12 @@ class MovieRepository(private val movieDao: MovieDao) {
         }
     }
 
+    fun deleteALL() {
+        coroutineScope.launch(Dispatchers.IO) {
+            movieDao.deleteAll()
+        }
+    }
+
     private fun asyncFind(name: String): Deferred<List<MovieRoom>?> =
         coroutineScope.async(Dispatchers.IO) {
             return@async movieDao.findMovie(name)

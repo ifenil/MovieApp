@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.movie.app.R
+import com.movie.app.logout
 import com.movie.app.room.MovieRoom
 import com.movie.app.room.RoomViewModel
 import com.movie.app.room.RoomViewModelFactory
@@ -106,9 +107,12 @@ fun MovieUI() {
 
 @Composable
 fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
+    val context = LocalContext.current
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         allMovies.forEach {
             item {
@@ -168,7 +172,9 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                         }
 
                         Row(
-                            modifier = Modifier.fillMaxSize().weight(1f),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Box(modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
@@ -196,6 +202,23 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                     }
                 }
             }
+        }
+
+        item {
+            Text(
+                text = "I'm leaving \uD83D\uDC4B",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Light,
+                color = Color.White,
+                modifier = Modifier
+                    .padding(horizontal = 5.dp, vertical = 5.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color.DarkGray)
+                    .clickable {
+                        logout(context, viewModel)
+                    }
+                    .padding(horizontal = 6.dp, vertical = 9.dp)
+            )
         }
     }
 }

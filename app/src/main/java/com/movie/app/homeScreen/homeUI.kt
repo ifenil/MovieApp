@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.movie.app.R
+import com.movie.app.homeScreen.NavScreens.WatchLaterUI
 
 sealed class NavigationItem(var route: String, var icon: Int, var title: String) {
     object Movies : NavigationItem("movies", R.drawable.ic_movie, "Movies")
@@ -77,10 +78,10 @@ fun Navigation(navController: NavHostController) {
             MovieUI()
         }
         composable(NavigationItem.Favorites.route) {
-            Text(text = "Favorites")
+            FavUI()
         }
         composable(NavigationItem.Watchlist.route) {
-            Text(text = "Watchlist")
+            WatchLaterUI()
         }
     }
 }

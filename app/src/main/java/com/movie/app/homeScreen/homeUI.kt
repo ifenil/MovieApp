@@ -80,10 +80,10 @@ fun Navigation(navController: NavHostController) {
             navController.MovieUI()
         }
         composable(NavigationItem.Favorites.route) {
-            FavUI()
+            navController.FavUI()
         }
         composable(NavigationItem.Watchlist.route) {
-            WatchLaterUI()
+            navController.WatchLaterUI()
         }
         composable(
             "watchFullMovie/{movieName}/{movieBanner}/{movieRating}/{movieDes}/{movieReleaseDate}",

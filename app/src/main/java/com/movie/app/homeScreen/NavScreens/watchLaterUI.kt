@@ -26,13 +26,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.movie.app.R
 import com.movie.app.room.RoomViewModel
 import com.movie.app.room.RoomViewModelFactory
 
 @Composable
-fun WatchLaterUI() {
+fun NavController.WatchLaterUI() {
 
     val owner = LocalViewModelStoreOwner.current
     owner?.let {
@@ -67,6 +68,11 @@ fun WatchLaterUI() {
                                         .clip(RoundedCornerShape(10.dp))
                                         .height(150.dp)
                                         .background(Color.DarkGray)
+                                        .clickable {
+                                            navigate(
+                                                "watchFullMovie/${it.movieName}/${it.movieBanner.removeRange(0,1)}/${it.userRating}/${it.description}/${it.releaseDate}"
+                                            )
+                                        }
                                 ) {
 
                                     Image(
@@ -76,7 +82,6 @@ fun WatchLaterUI() {
                                         modifier = Modifier
                                             .fillMaxHeight()
                                             .width(180.dp)
-                                            .clickable { }
                                     )
 
                                     Column(modifier = Modifier.fillMaxSize()) {
@@ -116,7 +121,9 @@ fun WatchLaterUI() {
                                         }
 
                                         Row(
-                                            modifier = Modifier.fillMaxSize().weight(1f),
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .weight(1f),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
                                             Box(modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp)) {
@@ -124,22 +131,22 @@ fun WatchLaterUI() {
                                                     progress = 1f,
                                                     color = Color.LightGray,
                                                     strokeWidth = 3.dp,
-                                                    modifier = Modifier.size(25.dp)
+                                                    modifier = Modifier.size(30.dp)
+                                                )
+                                                Text(
+                                                    text = it.userRating,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = Color.White,
+                                                    modifier = Modifier.align(Alignment.Center)
                                                 )
                                                 CircularProgressIndicator(
                                                     progress = it.userRating.toFloat()/10,
-                                                    color = Color.Yellow,
+                                                    color = if((it.userRating.toFloat()/10)<0.7f) Color.Red else Color.Green,
                                                     strokeWidth = 3.dp,
-                                                    modifier = Modifier.size(25.dp)
+                                                    modifier = Modifier.size(30.dp)
                                                 )
                                             }
-
-                                            Text(
-                                                text = "Rating: " + it.userRating,
-                                                fontSize = 10.sp,
-                                                fontWeight = FontWeight.Light,
-                                                color = Color.White,
-                                            )
                                         }
                                     }
                                 }

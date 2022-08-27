@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.movie.app.R
 import com.movie.app.logout
@@ -30,7 +31,7 @@ import com.movie.app.room.RoomViewModel
 import com.movie.app.room.RoomViewModelFactory
 
 @Composable
-fun MovieUI() {
+fun NavController.MovieUI() {
     val owner = LocalViewModelStoreOwner.current
     owner?.let {
         val viewModel: RoomViewModel = viewModel(
@@ -106,13 +107,12 @@ fun MovieUI() {
 }
 
 @Composable
-fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
+fun NavController.MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
     val context = LocalContext.current
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
         allMovies.forEach {
             item {
@@ -123,6 +123,11 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                         .clip(RoundedCornerShape(10.dp))
                         .height(150.dp)
                         .background(Color.DarkGray)
+                        .clickable {
+                            navigate(
+                                "watchFullMovie/${it.movieName}/${it.movieBanner.removeRange(0,1)}/${it.userRating}/${it.description}/${it.releaseDate}"
+                            )
+                        }
                 ) {
 
                     Image(
@@ -132,7 +137,6 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                         modifier = Modifier
                             .fillMaxHeight()
                             .width(180.dp)
-                            .clickable { }
                     )
 
                     Column(modifier = Modifier.fillMaxSize()) {
@@ -182,22 +186,22 @@ fun MovieList(allMovies: List<MovieRoom>, viewModel: RoomViewModel) {
                                     progress = 1f,
                                     color = Color.LightGray,
                                     strokeWidth = 3.dp,
-                                    modifier = Modifier.size(25.dp)
+                                    modifier = Modifier.size(30.dp)
+                                )
+                                Text(
+                                    text = it.userRating,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.White,
+                                    modifier = Modifier.align(Alignment.Center)
                                 )
                                 CircularProgressIndicator(
                                     progress = it.userRating.toFloat()/10,
-                                    color = Color.Yellow,
+                                    color = if((it.userRating.toFloat()/10)<0.7f) Color.Red else Color.Green,
                                     strokeWidth = 3.dp,
-                                    modifier = Modifier.size(25.dp)
+                                    modifier = Modifier.size(30.dp)
                                 )
                             }
-
-                            Text(
-                                text = "Rating: " + it.userRating,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Light,
-                                color = Color.White,
-                            )
                         }
                     }
                 }

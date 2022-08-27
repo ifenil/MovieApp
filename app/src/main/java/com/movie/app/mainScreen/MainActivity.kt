@@ -58,20 +58,19 @@ import org.json.JSONObject
 
 class MainActivity : ComponentActivity() {
     private val loginViewModel by viewModels<MainViewModel>()
-    lateinit var loginManager: LoginManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            loginManager = LoginManager(applicationContext)
+            val isLogged: Boolean = LoginManager(applicationContext).counter.collectAsState(initial = false).value
 
             MovieAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
 
                     NavHost(
                         navController = navController,
-                        startDestination = if (loginManager.counter.collectAsState(initial = false).value) "home" else "mainScreen"
+                        startDestination = if (isLogged) "home" else "mainScreen"
                     ) {
                         composable("mainScreen") {
                             navController.GoogleSignInComponent(loginViewModel = loginViewModel)
@@ -94,6 +93,7 @@ fun NavHostController.GoogleSignInComponent(loginViewModel: MainViewModel) {
     val statusText = remember { mutableStateOf("") }
     val loginManager = LoginManager(context)
     val owner = LocalViewModelStoreOwner.current
+
     owner?.let {
         val viewModel: RoomViewModel = viewModel(
             it,
@@ -120,7 +120,13 @@ fun NavHostController.GoogleSignInComponent(loginViewModel: MainViewModel) {
         val token = stringResource(R.string.default_web_client_id)
 
         if (state == LOADING) {
-            CircularProgressIndicator()
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(55.dp))
+                }
         } else {
             MainUI(
                 onSignInClick = {

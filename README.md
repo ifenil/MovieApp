@@ -17,4 +17,4 @@ https://user-images.githubusercontent.com/70626264/187022094-0c3c4719-dff5-4dad-
 
 ## 🥱 Direct Link
 ### App Link
-[![Download](https://freeiconshop.com/wp-content/uploads/edd/download-flat.png)](https://github.com/ifenil/MovieApp/raw/master/app/release/app-release.apk)
+[![Download](https://freeiconshop.com/wp-content/uploads/edd/download-flat.png)](https://github.com/ifenil/MovieApp/blob/master/app/release/app-release.apk)
